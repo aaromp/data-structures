@@ -5,8 +5,6 @@ var makeStack = function(){
   var size = 0; // Hint: set an initial value here
   var top = null;
 
-
-
   // Implement the methods below
   instance.push = function(value){
     size++;
