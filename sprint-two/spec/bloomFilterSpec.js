@@ -25,18 +25,8 @@ describe("bloomFilter", function() {
     bloomFilter.add(people[0]);
     expect(bloomFilter.query(people[1])).to.equal(false);
   });
-
-  it("should handle hash function collisions", function(){
-    bloomFilter.add(people[0]);
-    bloomFilter.add(people[1]);
-    bloomFilter.add(people[2]);
-    bloomFilter.add(people[3]);
-    expect(bloomFilter.query(people[4])).to.equal(false);
-    expect(bloomFilter.query(people[5])).to.equal(false);
-    expect(bloomFilter.query(people[6])).to.equal(false);
-  });
   
-  it("should handle hash function collisions", function(){
+  it("should return positive for added values", function(){
     bloomFilter.add(people[0]);
     bloomFilter.add(people[1]);
     bloomFilter.add(people[2]);
@@ -47,25 +37,25 @@ describe("bloomFilter", function() {
     expect(bloomFilter.query(people[3])).to.equal(true);
   });
   
-  it("should handle hash function collisions", function(){
+  it("should have an acceptable number of false positives", function(){
     
     // put n/2 objects in the bloom filter, check n.
-    var n = 1000;
+    var n = 10000;
     var numFound = 0;
     for (var i = 0; i < n; i ++) {
-      var obj = [i];
-      if ( i % 2 === 0) {
-        bloomFilter.add(obj);
-      }
-      if (bloomFilter.query(obj)) {
-       numFound++; 
-      }
+      bloomFilter = new BloomFilter(m, k);
+      bloomFilter.add(people[1]);
+      bloomFilter.add(people[2]);
+      bloomFilter.add(people[3]);
+      if (bloomFilter.query(people[4])) numFound++;
+      if (bloomFilter.query(people[5])) numFound++;
+      if (bloomFilter.query(people[6])) numFound++;
     }
     
-    var falsePositives = numFound - n/2;
+    var falsePositives = numFound - 3; // expect three positives
+    var expected = (1 - (Math.E^((-(k*n)/m))^k));
+    var upperBoundary = expected + (expected * .25);
     
-    console.log(falsePositives);
-    console.log((1 - (Math.E^((-(k*n)/m))^k)));
-    //expect(numFound).to.equal(true);
+    expect(falsePositives).to.be.below(upperBoundary);
   });
 });
