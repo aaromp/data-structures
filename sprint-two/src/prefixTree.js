@@ -28,8 +28,36 @@ PrefixTree.prototype.add = function(str) {
   }
 }
 
-PrefixTree.prototype.remove = function(word) {
+PrefixTree.prototype._recRemove = function(str, node, deleted) {
+  var letter = str[0];
+  // base case: we've reached the last letter in the word, mark the node as not a word
+  if (str.length === 1) {
+    node[letter].isWord = false;
+    return true
+  } 
+  // recursive case: we haven't dive deeper then return if a branched node was reached
+  else {
+    deleted = this._recRemove(str.slice(1), node[letter].next);
+  }
   
+  // if the next node has more than one child or is a word, delete this node 
+  if (Object.keys(node[letter].next).length <= 1 || node[letter].next.isWord) {
+    if (deleted) {
+      console.log("removing: " + node[letter].value);
+      delete node[letter];
+      deleted = false;
+    }
+  } else {
+    console.log("not removing: " + node[letter].value);
+    deleted = false;
+  }
+  
+  return deleted;
+}
+
+PrefixTree.prototype.remove = function(word) {
+  if (!this.contains(word)) return;
+  this._recRemove(word, this._storage, false);
 }
 
 PrefixTree.prototype.contains = function(str) {

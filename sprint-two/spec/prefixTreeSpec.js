@@ -144,7 +144,31 @@ describe("prefixTree", function() {
       prefixTree.add(shortScrabbleLibrary[i]);
     }
     console.log(prefixTree.contains("COFACTOR"));
-    console.log(prefixTree.contains("AARON"));
+    console.log(prefixTree.contains("cofactor"));
+    console.log(prefixTree);
+  });
+  
+  xit("be able to remove internal words from the prefix tree", function(){
+    prefixTree.add("he");
+    prefixTree.add("hell");
+    prefixTree.add("hello");
+    prefixTree.add("helps");
+    prefixTree.add("helping");;
+    
+    prefixTree.remove("hell");
+    
+    console.log(prefixTree);
+  });
+  
+  it("be able to remove terminal words from the prefix tree", function(){
+    prefixTree.add("he");
+    prefixTree.add("hell");
+    prefixTree.add("hello");
+    prefixTree.add("helps");
+    prefixTree.add("helping");;
+    
+    prefixTree.remove("helping");
+    
     console.log(prefixTree);
   });
 });
