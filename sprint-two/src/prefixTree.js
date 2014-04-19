@@ -40,35 +40,35 @@ PrefixTree.prototype._recRemove = function(str, node, deleted) {
   } 
   // recursive case: we haven't dive deeper then return if a branched node was reached
   else {
-    deleted = this._recRemove(str.slice(1), node[letter].next);
+    deleted = this._recRemove(str.slice(1), next);
   }
   
-  if (!deleted) {
-    // if there hasn't been a deletion at a node with more than one child and
-    // if next node is not word, delete next letter letter node
-    if (Object.keys(node[letter].next).length > 1 || node[letter].next[nextLetter].isWord) { //
-      deleted = true;
-    }
-    
-    if (!this.isPrefix(str)) {
-      console.log("removing: " + node[letter].next[nextLetter].value);
-      console.log("prefix is: " + str);
-      delete node[letter].next[nextLetter];
-    }
-    
-    
-    // 
-    // if (!node[letter].next[nextLetter].isWord) {
-    //   
-    //  }
-   }
+  // if there hasn't been a deletion at a node with more than one child, delete next letter letter node
+  if (!deleted && Object.keys(next).length > 1) { 
+    deleted = true;
+    delete next[nextLetter];
+  }
    
   return deleted;
 }
 
+PrefixTree.prototype._toggleIsWord = function(str, node) {
+  var letter = str[0];
+  var next = node[letter].next;
+  
+  // base case: we've reached the last letter in the word, mark the node as not a word
+  if (str.length === 1) node[letter].isWord = false;
+  // recursive case: we haven't dive deeper then return if a branched node was reached
+  else this._recRemove(str.slice(1), next);
+}
+
 PrefixTree.prototype.remove = function(word) {
   if (!this.contains(word)) return;
-  this._recRemove(word, this._storage, false);
+  
+  this._toggleIsWord(word, this._storage);
+  if(this.isPrefix(word.slice(0, word.length -1), false)) {
+    this._recRemove(word, this._storage, false)
+  }
 }
 
 PrefixTree.prototype.contains = function(str) {
@@ -97,20 +97,22 @@ PrefixTree.prototype.isPrefix = function(str) {
   if (str.length === 0) return true;
   
   var letter = str[0];
-  var node = arguments[1] ? arguments[1] : this._storage;
+  var includeWords = arguments[1] === undefined ? true : arguments[1]; //include words option--defaults to true
+  var node = arguments[2] ? arguments[2] : this._storage;
   
   // base case: the letter does not exist in the prefix tree, return false
   if (node[letter] === undefined) return false;
   
-  // base case: if we're on the last character and the node indicates that we've reached the end of a word,
-  // return true
-  if (str.length === 1) return true;
+  // base case: last character reached, indicate if prefix
+  if (str.length === 1) {
+    return includeWords ? true : !node[letter].isWord;
+  }
   
   // base case: the next letter node is empty, so return false
   if (Object.keys(node[letter].next).length === 0) return false;
   
   // recursive case: look into the next letter and return
-  return this.isPrefix(str.slice(1), node[letter].next);
+  return this.isPrefix(str.slice(1), includeWords, node[letter].next);
 }
 
 PrefixTree.prototype.getWords = function(prefix) {

@@ -81,71 +81,80 @@ describe("prefixTree", function() {
     prefixTree = new PrefixTree();
   });
   
-  xit("allow addition of words", function(){
+  it("allow addition of words", function(){
     prefixTree.add("hello");
     prefixTree.add("hell");
     prefixTree.add("he");
     
-    
-    console.log(prefixTree);
+    expect(prefixTree.contains("he")).to.equal(true);
+    expect(prefixTree.contains("hell")).to.equal(true);
+    expect(prefixTree.contains("hello")).to.equal(true);
   });
   
-  xit("allow words with different prefixes", function(){
+  it("allow words with different prefixes", function(){
     prefixTree.add("hello");
     prefixTree.add("hell");
     prefixTree.add("he");
     
     prefixTree.add("me");
-    prefixTree.add("mello");
+    prefixTree.add("mellon");
     
-    
-    console.log(prefixTree);
+    expect(prefixTree.contains("he")).to.equal(true);
+    expect(prefixTree.contains("hell")).to.equal(true);
+    expect(prefixTree.contains("hello")).to.equal(true);
+    expect(prefixTree.contains("me")).to.equal(true);
+    expect(prefixTree.contains("mellon")).to.equal(true);
   });
   
-  xit("be able to tell if word exits in the prefix tree", function(){
+  it("be able to tell if word exits in the prefix tree", function(){
     prefixTree.add("hello");
     prefixTree.add("hell");
     prefixTree.add("he");
     
-    console.log(prefixTree.contains("h"));
-    console.log(prefixTree.contains("he"));
-    console.log(prefixTree.contains("hel"));
-    console.log(prefixTree.contains("hell"));
-    console.log(prefixTree.contains("hello"));
-    console.log(prefixTree.contains("me"));
-    console.log(prefixTree.contains(""));
-    console.log(prefixTree.contains("hella"));
-    console.log(prefixTree.contains("hes"));
+    expect(prefixTree.contains("h")).to.equal(false);
+    expect(prefixTree.contains("he")).to.equal(true);
+    expect(prefixTree.contains("hel")).to.equal(false);
+    expect(prefixTree.contains("hell")).to.equal(true);
+    expect(prefixTree.contains("hello")).to.equal(true);
+    expect(prefixTree.contains("me")).to.equal(false);
+    expect(prefixTree.contains("")).to.equal(false);
+    expect(prefixTree.contains("hella")).to.equal(false);
+    expect(prefixTree.contains("hes")).to.equal(false);
   });
   
-  xit("be able to tell if prefix exits in the prefix tree", function(){
+  it("be able to tell if prefix exits in the prefix tree (include words)", function(){
+    var includeWords = true;
+    
     prefixTree.add("hello");
     
-    console.log(prefixTree.isPrefix(""));
-    console.log(prefixTree.isPrefix("h"));
-    console.log(prefixTree.isPrefix("he"));
-    console.log(prefixTree.isPrefix("hel"));
-    console.log(prefixTree.isPrefix("hell"));
-    console.log(prefixTree.isPrefix("hello"));
+    expect(prefixTree.isPrefix("", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("h", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("he", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("hel", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("hell", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("hello", includeWords)).to.equal(true);
   });
   
-  xit("be able to tell if prefix does not exits in the prefix tree", function(){
-    prefixTree.add("hello");
-    prefixTree.add("hell");
-    prefixTree.add("he");
+  it("be able to tell if prefix does not exits in the prefix tree (don't include words)", function(){
+    var includeWords = false;
     
-    console.log(prefixTree.isPrefix("hellos"));
-    console.log(prefixTree.isPrefix("her"));
-    console.log(prefixTree.isPrefix("me"));
+    prefixTree.add("hello");
+    
+    expect(prefixTree.isPrefix("", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("h", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("he", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("hel", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("hell", includeWords)).to.equal(true);
+    expect(prefixTree.isPrefix("hello", includeWords)).to.equal(false);
   });
   
-  xit("import a library of scrabble words", function(){
+  it("import a library of scrabble words", function(){
     for (var i = 0; i < shortScrabbleLibrary.length; i++) {
       prefixTree.add(shortScrabbleLibrary[i]);
     }
-    console.log(prefixTree.contains("COFACTOR"));
-    console.log(prefixTree.contains("cofactor"));
-    console.log(prefixTree);
+    
+    expect(prefixTree.contains("COFACTOR")).to.equal(true);
+    expect(prefixTree.contains("cofactor")).to.equal(false);
   });
   
   it("be able to remove internal words from the prefix tree", function(){
@@ -155,13 +164,11 @@ describe("prefixTree", function() {
     
     prefixTree.remove("hell");
     
-    console.log(prefixTree);
+    // console.log(prefixTree);
     
     expect(prefixTree.contains("hello")).to.equal(true);
     expect(prefixTree.contains("he")).to.equal(true);
     expect(prefixTree.contains("hell")).to.equal(false);
-    
-    // console.log(prefixTree);
   });
   
   it("be able to remove terminal words from the prefix tree", function(){
@@ -195,12 +202,20 @@ describe("prefixTree", function() {
     prefixTree.remove("he");
     prefixTree.remove("helps");
     
+    // console.log(prefixTree);
+    
     expect(prefixTree.contains("helps")).to.equal(false);
     expect(prefixTree.contains("hello")).to.equal(true);
     expect(prefixTree.contains("helping")).to.equal(false);
     expect(prefixTree.contains("he")).to.equal(false);
     expect(prefixTree.contains("hell")).to.equal(true);
-    
+  });
+  
+  it("adds and removes a single word", function(){
+      prefixTree.add("hellos");
 
+      prefixTree.remove("he");
+    
+    console.log(prefixTree);
   });
 });
