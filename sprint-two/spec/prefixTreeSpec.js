@@ -211,11 +211,47 @@ describe("prefixTree", function() {
     expect(prefixTree.contains("hell")).to.equal(true);
   });
   
+  it("toggles word", function(){
+    prefixTree.add("hi");
+    
+    prefixTree._toggleIsWord("hi", prefixTree._storage);
+    
+    // console.log(prefixTree);
+    
+    expect(prefixTree.contains("hi")).to.equal(false);
+  });
+  
   it("adds and removes a single word", function(){
-      prefixTree.add("hellos");
+    prefixTree.add("hellos");
 
-      prefixTree.remove("he");
+    prefixTree.remove("hellos");
     
     console.log(prefixTree);
+    
+    expect(Object.keys(prefixTree._storage).length === 0).to.equal(true);
+  });
+  
+  it("adds and removes an entire library forwards", function(){
+    for (var i = 0; i < shortScrabbleLibrary.length; i++) {
+      prefixTree.add(shortScrabbleLibrary[i]);
+    }
+    
+    for (var i = 0; i < shortScrabbleLibrary.length; i++) {
+      prefixTree.remove(shortScrabbleLibrary[i]);
+    }
+    
+    expect(Object.keys(prefixTree._storage).length === 0).to.equal(true);
+  });
+  
+  it("adds and removes an entire library backwards", function(){
+    for (var i = 0; i < shortScrabbleLibrary.length; i++) {
+      prefixTree.add(shortScrabbleLibrary[i]);
+    }
+    
+    for (var i = shortScrabbleLibrary.length - 1; i >= 0; i--) {
+      prefixTree.remove(shortScrabbleLibrary[i]);
+    }
+    
+    expect(Object.keys(prefixTree._storage).length === 0).to.equal(true);
   });
 });

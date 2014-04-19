@@ -43,11 +43,14 @@ PrefixTree.prototype._recRemove = function(str, node, deleted) {
     deleted = this._recRemove(str.slice(1), next);
   }
   
-  // if there hasn't been a deletion at a node with more than one child, delete next letter letter node
-  if (!deleted && Object.keys(next).length > 1) { 
-    deleted = true;
-    delete next[nextLetter];
-  }
+  // if there hasn't been a deletion and there's  more than one child, delete next's letter
+  // if (!deleted) {
+  //   if(Object.keys(next).length > 1) { 
+  //     deleted = true;
+  //     
+  //   }
+  // } 
+  // if (next[nextLetter].isWord) delete next[nextLetter];
    
   return deleted;
 }
@@ -66,7 +69,7 @@ PrefixTree.prototype.remove = function(word) {
   if (!this.contains(word)) return;
   
   this._toggleIsWord(word, this._storage);
-  if(this.isPrefix(word.slice(0, word.length -1), false)) {
+  if(this.isPrefix(word, false)) {
     this._recRemove(word, this._storage, false)
   }
 }
