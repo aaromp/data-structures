@@ -148,16 +148,20 @@ describe("prefixTree", function() {
     console.log(prefixTree);
   });
   
-  xit("be able to remove internal words from the prefix tree", function(){
+  it("be able to remove internal words from the prefix tree", function(){
     prefixTree.add("he");
     prefixTree.add("hell");
     prefixTree.add("hello");
-    prefixTree.add("helps");
-    prefixTree.add("helping");;
     
     prefixTree.remove("hell");
     
     console.log(prefixTree);
+    
+    expect(prefixTree.contains("hello")).to.equal(true);
+    expect(prefixTree.contains("he")).to.equal(true);
+    expect(prefixTree.contains("hell")).to.equal(false);
+    
+    // console.log(prefixTree);
   });
   
   it("be able to remove terminal words from the prefix tree", function(){
@@ -168,7 +172,35 @@ describe("prefixTree", function() {
     prefixTree.add("helping");;
     
     prefixTree.remove("helping");
+    prefixTree.remove("helps");
     
-    console.log(prefixTree);
+    // console.log(prefixTree);
+    
+    expect(prefixTree.contains("helps")).to.equal(false);
+    expect(prefixTree.contains("hello")).to.equal(true);
+    expect(prefixTree.contains("hell")).to.equal(true);
+    expect(prefixTree.contains("he")).to.equal(true);
+    expect(prefixTree.contains("helping")).to.equal(false);
+
+  });
+  
+  it("be able to remove terminal and internal words from the prefix tree", function(){
+    prefixTree.add("he");
+    prefixTree.add("hell");
+    prefixTree.add("hello");
+    prefixTree.add("helps");
+    prefixTree.add("helping");;
+    
+    prefixTree.remove("helping");
+    prefixTree.remove("he");
+    prefixTree.remove("helps");
+    
+    expect(prefixTree.contains("helps")).to.equal(false);
+    expect(prefixTree.contains("hello")).to.equal(true);
+    expect(prefixTree.contains("helping")).to.equal(false);
+    expect(prefixTree.contains("he")).to.equal(false);
+    expect(prefixTree.contains("hell")).to.equal(true);
+    
+
   });
 });
