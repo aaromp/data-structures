@@ -205,21 +205,22 @@ describe("prefixTree", function() {
   });
 
   it("should get scrabble solutions for a given set of tiles", function(){
-    var scrabbleBag, tiles, solutions;
+    var scrabbleBag, tiles, solutions, numTiles;
     scrabbleBag = new ScrabbleBag;
 
+    numTiles = 7;
 
-    for (var i = 0; i < shortScrabbleLibrary.length; i++) {
-      prefixTree.addWord(shortScrabbleLibrary[i]);
+    for (var i = 0; i < longScrabbleLibrary.length; i++) {
+      prefixTree.addWord(longScrabbleLibrary[i]);
     }
 
-    tiles = scrabbleBag.getTiles(7);
+    tiles = scrabbleBag.getTiles(numTiles);
     console.log(tiles);
     solutions = getScrabbleSolutions(prefixTree, tiles);
 
     console.log(solutions);
 
-    expect(scrabbleBag.numTiles()).to.equal(93);
+    expect(scrabbleBag.numTiles()).to.equal(100 - numTiles);
   });
 
   shortScrabbleLibrary = [

@@ -129,7 +129,7 @@ PrefixTree.prototype._getWords = function(prefix, node, results) {
   }
 }
 
-PrefixTree.prototype.getNodes = function() {
+PrefixTree.prototype.getRoot = function() {
   return this._nodes;
 }
 
@@ -249,35 +249,41 @@ var ScrabbleTile = function(letter, points) {
   this.points = points;
 }
 
+ScrabbleTile.prototype.getLetter = function() {
+  return this.letter;
+}
+
 /* ---- Scrabble Solver ---- */
 
 
 var recGetScrabbleWords = function(prefix, node, tiles, results) {
-  // base case: prefix is not in the tree,
-  var i, tile;
+  var i, tile, copy;
 
+  // base case: node is not in the tree
+  if (node === undefined) return;
   prefix = prefix + node.getValue();
+  // console.log(prefix);
 
   // general case: node represents the end of a word
-  if (node.word()) results.push(prefix);
+  if (node.word()) results[prefix] = true;
 
   // base case: node has no children
   if (!node.hasChildren()) return;
 
   // recursive case: node has children--recurse down each node
   for (i = 0; i < tiles.length; i++) {
-    tile = tiles.splice(i, 1);
-    recGetScrabbleWords(prefix, node.getChild(tile.letter), tiles, results)
+    copy = tiles.slice()
+    tile = copy.splice(i, 1)[0];
+    recGetScrabbleWords(prefix, node.getChild(tile.letter), copy, results)
   }
 }
 
 var getScrabbleSolutions = function(prefixTree, tiles) {
-  var i, results, nodes;
-  results = [];
+  var i, results, root;
+  results = {};
+  root = prefixTree.getRoot();
 
-  nodes = prefixTree.getNodes();
-
-  recGetScrabbleWords(node.getValue(), nodes[node], tiles, results);
+  recGetScrabbleWords(root.getValue(), root, tiles, results);
 
   return results;
 }
