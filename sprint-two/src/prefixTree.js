@@ -1,5 +1,7 @@
+/* ---- Prefix Tree Class ---- */
+
 var PrefixTree = function() {
-  this._nodes = {};
+  this._nodes = new Node("");
 }
 
 PrefixTree.prototype.addWord = function(word) {
@@ -103,25 +105,46 @@ PrefixTree.prototype.isPrefix = function(prefix) {
 
 PrefixTree.prototype.getWords = function(prefix) {
   var i, letter, node, words;
-  letter = prefix[0];
-  node = this._nodes[letter];
+
   words = [];
+  if (!this.isPrefix(prefix)) return words;
 
-  // empty string is included in all prefixes
-  if (prefix.length === 0) return true;
+  letter = prefix[0];
+  node = this._nodes[letter]
 
-  if (node === undefined) return false;
-
+  // update node to last letter node in prefix
   for (i = 1; i < prefix.length; i++) {
     letter = prefix[i];
-
-    if (!node.hasChild(letter)) return false;
-
     node = node.getChild(letter);
   }
 
-  return includeWords ? true : !node.word();
+  this._getWords(prefix.slice(0, prefix.length - 1), node, words); //slice off by one
+
+  return words;
 }
+
+PrefixTree.prototype._getWords = function(prefix, node, results) {
+  var nodes;
+
+  prefix = prefix + node.getValue();
+
+  // general case: node represents the end of a word
+  if (node.word()) results.push(prefix);
+
+  // base case: node has no children--add it's value to the prefix
+  if (!node.hasChildren()) return;  
+
+  // recursive case: node has children--recurse down each node
+  for (child in node.getChildren()) {
+    this._getWords(prefix, node.getChild(child), results);
+  }
+}
+
+PrefixTree.prototype.getNodes = function() {
+  return this._nodes;
+}
+
+/* ---- Node Class ---- */
 
 
 var Node = function(value) {
@@ -155,6 +178,10 @@ Node.prototype.hasChildren = function() {
   return this._children !== null;
 }
 
+Node.prototype.getChildren = function() {
+  return this._children;
+}
+
 Node.prototype.addNode = function(value) {
 	// if node is not contained in children, initialize it with an object
 	if (this._children === null) this._children = {};
@@ -178,6 +205,88 @@ Node.prototype.numChildren = function() {
 
 Node.prototype.getChild = function(value) {
   if (this.hasChild(value)) return this._children[value];
+}
+
+
+/* ---- Scrabble Bag Class ---- */
+
+
+var ScrabbleBag = function() {
+  var i, j;
+  var letters = [' ','A','B','C','D','E','F','G','H','I','J','K','L','M', 'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+  var num = [2, 9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1];
+  var points = [0, 1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10];
+  var bag = _.zip(letters, num, points);
+
+  // initialize tiles;
+  this._tiles = []
+  for (i = 0; i < bag.length; i++) {
+    for (j = 0; j < bag[i][1]; j++) {
+      this._tiles.push(new ScrabbleTile(bag[i][0], bag[i][2]));
+    }
+  }
+}
+
+ScrabbleBag.prototype.getTiles = function(num) {
+  var result, i;
+
+  result = [];
+  for (i = 0; i < num; i++) {
+    result.push(this.getTile());
+  }
+
+  return result;
+}
+
+ScrabbleBag.prototype.getTile = function() {
+  var i;
+  i = Math.random() * this.numTiles();
+
+  return this._tiles.splice(i, 1)[0];
+}
+
+ScrabbleBag.prototype.numTiles = function() {
+  return this._tiles.length;
+}
+
+/* ---- Scrabble Tile Class ---- */
+
+var ScrabbleTile = function(letter, points) {
+  this.letter = letter;
+  this.points = points;
+}
+
+/* ---- Scrabble Solver ---- */
+
+
+var recGetScrabbleWords = function(prefix, node, tiles, results) {
+  // base case: prefix is not in the tree,
+  var i, tile;
+
+  prefix = prefix + node.getValue();
+
+  // general case: node represents the end of a word
+  if (node.word()) results.push(prefix);
+
+  // base case: node has no children
+  if (!node.hasChildren()) return;
+
+  // recursive case: node has children--recurse down each node
+  for (i = 0; i < tiles.length; i++) {
+    tile = tiles.splice(i, 1);
+    recGetScrabbleWords(prefix, node.getChild(tile.letter), tiles, results)
+  }
+}
+
+var getScrabbleSolutions = function(prefixTree, tiles) {
+  var i, results, nodes;
+  results = [];
+
+  nodes = prefixTree.getNodes();
+
+  recGetScrabbleWords(node.getValue(), nodes[node], tiles, results);
+
+  return results;
 }
 
 
