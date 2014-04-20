@@ -141,13 +141,13 @@ describe("prefixTree", function() {
   });
   
   it("adds and removes a single word", function(){
-    prefixTree.addWord("h");
+    prefixTree.addWord("hi");
 
-    prefixTree.removeWord("h");
+    prefixTree.removeWord("hi");
     
     // console.log(prefixTree);
     
-    expect(Object.keys(prefixTree._nodes).length === 0).to.equal(true);
+    expect(prefixTree.empty()).to.equal(true);
   });
   
   it("adds and removes an entire library forwards", function(){
@@ -159,7 +159,7 @@ describe("prefixTree", function() {
       prefixTree.removeWord(shortScrabbleLibrary[i]);
     }
     
-    expect(Object.keys(prefixTree._nodes).length === 0).to.equal(true);
+    expect(prefixTree.empty()).to.equal(true);
   });
   
   it("adds and removes an entire library backwards", function(){
@@ -171,7 +171,7 @@ describe("prefixTree", function() {
       prefixTree.removeWord(shortScrabbleLibrary[i]);
     }
     
-    expect(Object.keys(prefixTree._nodes).length === 0).to.equal(true);
+    expect(prefixTree.empty()).to.equal(true);
   });
 
   it("should be able to return words with a given prefix", function(){
@@ -182,6 +182,7 @@ describe("prefixTree", function() {
     prefixTree.addWord("helping");;
 
     var words = prefixTree.getWords("hel");
+    // console.log(words);
     
     expect(words).to.contain("hell");
     expect(words).to.contain("hello");
@@ -211,6 +212,7 @@ describe("prefixTree", function() {
     for (var i = 0; i < shortScrabbleLibrary.length; i++) {
       prefixTree.addWord(shortScrabbleLibrary[i]);
     }
+
     tiles = scrabbleBag.getTiles(7);
     console.log(tiles);
     solutions = getScrabbleSolutions(prefixTree, tiles);

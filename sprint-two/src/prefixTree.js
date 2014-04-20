@@ -6,13 +6,9 @@ var PrefixTree = function() {
 
 PrefixTree.prototype.addWord = function(word) {
   var i, node, letter;
-  letter = word[0];
+  node = this._nodes;
 
-  // initialize, prefix tree if necessary
-  if (this._nodes[letter] === undefined) this._nodes[letter] = new Node(letter);
-  node = this._nodes[letter];
-
-  for (i = 1; i < word.length; i++) {
+  for (i = 0; i < word.length; i++) {
     letter = word[i];
 
     // if the node isn't in the prefix tree, add it
@@ -29,18 +25,14 @@ PrefixTree.prototype.removeWord = function(word) {
   // if the word is not contained in the tree, do nothing
   if (!this.contains(word)) return;
 
-  var i, node, letter, lastWord, tmp;
-  letter = word[0];
-  node = this._nodes[letter];
+  var i, node, letter;
+  node = this._nodes;
 
   // track word nodes, initialize with first node 
-  nodes = [this._nodes, node];
+  nodes = [node];
 
-  for (i = 1; i < word.length; i++) {
+  for (i = 0; i < word.length; i++) {
     letter = word[i];
-    
-    // if the node isn't in the prefix tree, add it
-    if (!node.hasChild(letter)) node.addNode(letter);
 
     // update the node to it's child letter node
     node = node.getChild(letter);
@@ -52,7 +44,8 @@ PrefixTree.prototype.removeWord = function(word) {
   if (node.hasChildren()) return;
 
   // otherwise delete nodes that aren't a node and have no children and who's preceeding node has only one child.
-  for (i = nodes.length - 1; i > 1; i--) {
+  for (i = nodes.length - 1; i > 0; i--) {
+    // console.log(nodes[i-1].getValue() + " " + nodes[i].getValue());
     if (!nodes[i].hasChildren() && !nodes[i].word() && nodes[i-1].numChildren() === 1) {
       nodes[i-1].removeNode(nodes[i].getValue()); 
     } else {
@@ -61,16 +54,14 @@ PrefixTree.prototype.removeWord = function(word) {
     }
   }
 
-  delete nodes[0][word[0]];
+  // delete nodes[0][word[0]];
 }
 
 PrefixTree.prototype.contains = function(word) {
   var i, letter, node;
-  letter = word[0];
-  node = this._nodes[letter]
-  if (node === undefined) return false;
+  node = this._nodes;
 
-  for (i = 1; i < word.length; i++) {
+  for (i = 0; i < word.length; i++) {
     letter = word[i];
 
     if (!node.hasChild(letter)) return false;
@@ -83,16 +74,15 @@ PrefixTree.prototype.contains = function(word) {
 
 PrefixTree.prototype.isPrefix = function(prefix) {
   var i, letter, node, includeWords;
-  letter = prefix[0];
-  node = this._nodes[letter]
+  node = this._nodes;
   includeWords = arguments[1] === undefined ? true : arguments[1]; // option to not consider words to be prefixes
 
-  // empty string is included in all prefixes
-  if (prefix.length === 0) return true;
+  // // empty string is included in all prefixes
+  // if (prefix.length === 0) return true;
 
-  if (node === undefined) return false;
+  // if (node === undefined) return false;
 
-  for (i = 1; i < prefix.length; i++) {
+  for (i = 0; i < prefix.length; i++) {
     letter = prefix[i];
 
     if (!node.hasChild(letter)) return false;
@@ -109,11 +99,10 @@ PrefixTree.prototype.getWords = function(prefix) {
   words = [];
   if (!this.isPrefix(prefix)) return words;
 
-  letter = prefix[0];
-  node = this._nodes[letter]
+  node = this._nodes;
 
   // update node to last letter node in prefix
-  for (i = 1; i < prefix.length; i++) {
+  for (i = 0; i < prefix.length; i++) {
     letter = prefix[i];
     node = node.getChild(letter);
   }
@@ -142,6 +131,10 @@ PrefixTree.prototype._getWords = function(prefix, node, results) {
 
 PrefixTree.prototype.getNodes = function() {
   return this._nodes;
+}
+
+PrefixTree.prototype.empty = function() {
+  return !this._nodes.hasChildren();
 }
 
 /* ---- Node Class ---- */
