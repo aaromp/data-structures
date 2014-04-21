@@ -255,14 +255,12 @@ ScrabbleTile.prototype.getLetter = function() {
 
 /* ---- Scrabble Solver ---- */
 
-
 var recGetScrabbleWords = function(prefix, node, tiles, results) {
-  var i, tile, copy;
+  var i, tile, subset, charCode;
 
   // base case: node is not in the tree
   if (node === undefined) return;
   prefix = prefix + node.getValue();
-  // console.log(prefix);
 
   // general case: node represents the end of a word
   if (node.word()) results[prefix] = true;
@@ -272,9 +270,16 @@ var recGetScrabbleWords = function(prefix, node, tiles, results) {
 
   // recursive case: node has children--recurse down each node
   for (i = 0; i < tiles.length; i++) {
-    copy = tiles.slice()
-    tile = copy.splice(i, 1)[0];
-    recGetScrabbleWords(prefix, node.getChild(tile.letter), copy, results)
+    subset = tiles.slice();
+    tile = subset.splice(i, 1)[0];
+
+    if (tile.letter === ' ') {
+      for (charCode = 'A'.charCodeAt(0); charCode <= 'Z'.charCodeAt(0); charCode++) {
+        recGetScrabbleWords(prefix, node.getChild(String.fromCharCode(charCode)), subset, results);
+      }
+    } else {
+      recGetScrabbleWords(prefix, node.getChild(tile.letter), subset, results);
+    }
   }
 }
 
